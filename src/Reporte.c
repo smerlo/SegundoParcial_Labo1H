@@ -70,7 +70,7 @@ int reporte_getNombre(Reporte* this, char* nombre)
 	return retorno;
 }
 
-int reporte_setDescripcion(Reporte* this, char* descripcion)
+/*int reporte_setDescripcion(Reporte* this, char* descripcion)
 {
 	int retorno = 0;
 	if(this != NULL && descripcion != NULL)
@@ -90,7 +90,7 @@ int reporte_getDescripcion(Reporte* this, char* descripcion)
 		retorno = 1;
 	}
 	return retorno;
-}
+}*/
 
 int reporte_setFob(Reporte* this, float fob)
 {
@@ -237,13 +237,13 @@ Reporte* reporte_new(void)
 }
 
 
-Reporte* reporte_newParametros(char* idStr, char* codigo, char* nombre, char* descripcion, char* fobStr, char* pArancelariaStr,
+Reporte* reporte_newParametros(char* idStr, char* codigo, char* nombre, char* fobStr, char* pArancelariaStr,
 										char* mCubicosStr, char* cmCubicosStr, char* valorAereoStr, char* valorMaritimoStr)
 {
 	Reporte* aux = NULL;
 	aux = reporte_new();
 	char nArancelaria[48];
-	if(aux != NULL && idStr != NULL && codigo != NULL && nombre != NULL && descripcion != NULL && fobStr != NULL && pArancelariaStr != NULL && mCubicosStr != NULL &&
+	if(aux != NULL && idStr != NULL && codigo != NULL && nombre != NULL && fobStr != NULL && pArancelariaStr != NULL && mCubicosStr != NULL &&
 			cmCubicosStr != NULL && valorAereoStr != NULL && valorMaritimoStr != NULL )
 	{
 		if(aux_verificarNumerica(idStr, 10) == 0 && aux_verificarFlotante(fobStr) == 0 && aux_verificarFlotante(mCubicosStr) == 0 && aux_verificarFlotante(cmCubicosStr) == 0 &&
@@ -251,7 +251,7 @@ Reporte* reporte_newParametros(char* idStr, char* codigo, char* nombre, char* de
 		{
 			strcpy(nArancelaria,pArancelariaStr);
 			if(reporte_setId(aux, atoi(idStr)) == 1 && reporte_setCodigo(aux, codigo) == 1 &&
-				reporte_setNombre(aux, nombre) == 1 && reporte_setDescripcion(aux, descripcion) == 1 && reporte_setFob(aux, atof(fobStr)) == 1 &&
+				reporte_setNombre(aux, nombre) == 1 && reporte_setFob(aux, atof(fobStr)) == 1 &&
 				reporte_setpArancelaria(aux, nArancelaria) == 1 && reporte_setmCubicos(aux, atof(mCubicosStr)) == 1 &&
 				reporte_setcmCubicos(aux, atof(cmCubicosStr)) == 1 && reporte_setvalorAereo(aux, atof(valorAereoStr)) == 1 &&
 				reporte_setvalorMaritimo(aux, atof(valorMaritimoStr)) == 1)
@@ -281,7 +281,6 @@ int reporte_imprimir(Reporte* this)
 	int id;
 	char nombre[48];
 	char codigo[48];
-	char descripcion[256];
 	float fob;
 	char nArancelaria[20];
 	float costoAereo;
@@ -294,13 +293,12 @@ int reporte_imprimir(Reporte* this)
 		reporte_getId(this,&id);
 		reporte_getCodigo(this,codigo);
 		reporte_getNombre(this,nombre);
-		reporte_getDescripcion(this,descripcion);
 		reporte_getFob(this,&fob);
 		reporte_getpArancelaria(this, nArancelaria);
 		reporte_getvalorMaritimo(this,&costoMaritimo);
 		reporte_getvalorAereo(this,&costoAereo);
 
-		printf("%d%20s%20s%20s%20f%20s%20f%20f\n",id,nombre,codigo,descripcion,fob,nArancelaria,costoAereo,costoMaritimo);
+		printf("%d%20s%20s%20f%20s%20f%20f\n",id,nombre,codigo,fob,nArancelaria,costoAereo,costoMaritimo);
 	}
 	return retorno;
 }

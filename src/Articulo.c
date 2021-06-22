@@ -72,7 +72,7 @@ int articulo_getNombre(Articulo* this, char* nombre)
 	return retorno;
 }
 
-int articulo_setDescripcion(Articulo* this, char* descripcion)
+/*int articulo_setDescripcion(Articulo* this, char* descripcion)
 {
 	int retorno = 0;
 	if(this != NULL && descripcion != NULL)
@@ -92,7 +92,7 @@ int articulo_getDescripcion(Articulo* this, char* descripcion)
 		retorno = 1;
 	}
 	return retorno;
-}
+}*/
 
 int articulo_setFob(Articulo* this, float fob)
 {
@@ -261,19 +261,19 @@ Articulo* articulo_new(void)
 }
 
 
-Articulo* articulo_newParametros(char* idStr, char* codigo, char* nombre, char* descripcion, char* fobStr, char* pArancelariaStr,
+Articulo* articulo_newParametros(char* idStr, char* codigo, char* nombre, char* fobStr, char* pArancelariaStr,
 										char* anchoStr, char* altoStr, char* profundidadStr, char* pesoStr, char* paisFabricacion)
 {
 	Articulo* aux = NULL;
 	aux = articulo_new();
-	if(aux != NULL && idStr != NULL && codigo != NULL && nombre != NULL && descripcion != NULL && fobStr != NULL && pArancelariaStr != NULL && anchoStr != NULL &&
+	if(aux != NULL && idStr != NULL && codigo != NULL && nombre != NULL && fobStr != NULL && pArancelariaStr != NULL && anchoStr != NULL &&
 			altoStr != NULL && profundidadStr != NULL && pesoStr != NULL && paisFabricacion != NULL)
 	{
 		if(aux_verificarNumerica(idStr, 10) == 0 && aux_verificarFlotante(fobStr) == 0 && aux_verificarFlotante(anchoStr) == 0 && aux_verificarFlotante(altoStr) == 0 &&
 				aux_verificarFlotante(profundidadStr) == 0 && aux_verificarFlotante(pesoStr) == 0 && aux_verificarNumerica(pArancelariaStr, 10) == 0)
 		{
 			if(articulo_setId(aux, atoi(idStr)) == 1 && articulo_setCodigo(aux, codigo) == 1 &&
-				articulo_setNombre(aux, nombre) == 1 && articulo_setDescripcion(aux, descripcion) == 1 && articulo_setFob(aux, atof(fobStr)) == 1 &&
+				articulo_setNombre(aux, nombre) == 1 && articulo_setFob(aux, atof(fobStr)) == 1 &&
 				articulo_setpArancelaria(aux, atoi(pArancelariaStr)) == 1 && articulo_setAncho(aux, atof(anchoStr)) == 1 &&
 				articulo_setAlto(aux, atof(altoStr)) == 1 && articulo_setProfundidad(aux, atof(profundidadStr)) == 1 &&
 				articulo_setPeso(aux, atof(pesoStr)) == 1 && articulo_setPaisFabricacion(aux, paisFabricacion) == 1)
@@ -304,7 +304,6 @@ int articulo_imprimir(Articulo* this)
 	int id;
 	char codigo[24];
 	char nombre[128];
-	char descripcion[256];
 	float fob;
 	int pArancelaria;
 	float ancho;
@@ -319,7 +318,6 @@ int articulo_imprimir(Articulo* this)
 		articulo_getId(this,&id);
 		articulo_getCodigo(this,codigo);
 		articulo_getNombre(this,nombre);
-		articulo_getDescripcion(this,descripcion);
 		articulo_getFob(this,&fob);
 		articulo_getpArancelaria(this, &pArancelaria);
 		articulo_getAncho(this,&ancho);
@@ -327,7 +325,7 @@ int articulo_imprimir(Articulo* this)
 		articulo_getProfundidad(this, &profundidad);
 		articulo_getPeso(this,&peso);
 		articulo_getPaisFabricacion(this,paisFabricacion);
-		printf("%d%15s%15s%30s%15f%15d%15f%15f%15f%15f%15s\n",id,codigo,nombre,descripcion,fob,pArancelaria,ancho,alto,profundidad,peso,paisFabricacion);
+		printf("%d%15s%15s%15f%15d%15f%15f%15f%15f%15s\n",id,codigo,nombre,fob,pArancelaria,ancho,alto,profundidad,peso,paisFabricacion);
 	}
 	return retorno;
 }

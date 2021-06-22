@@ -124,7 +124,6 @@ static int crearReporte(LinkedList* pArrayListReporte,Articulo* articulo, pAranc
 	char costoArgentinoMaritimoTxt[20];
 	char codigo[24];
 	char nombre[128];
-	char descripcion[256];
 	char nArancelaria[48];
 	Reporte* auxReporte;
 	if(articulo != NULL && pArancelaria != NULL && mCubicos > 0 && cmCubicos > 0 && costoArgentinoAereo > 0 && costoArgentinoMaritimo > 0)
@@ -137,12 +136,11 @@ static int crearReporte(LinkedList* pArrayListReporte,Articulo* articulo, pAranc
 		sprintf(costoArgentinoMaritimoTxt,"%f",costoArgentinoMaritimo);
 		strcpy(codigo, articulo->codigo);
 		strcpy(nombre, articulo->nombre);
-		strcpy(descripcion, articulo->descripcion);
 		pArancelaria_getNomenclaturaArancelaria(pArancelaria,nArancelaria);
-		if(reporte_newParametros(idTxt,codigo,nombre,descripcion,fobTxt,  nArancelaria, mCubicosTxt,  cmCubicosTxt,  costoArgentinoAereoTxt,  costoArgentinoMaritimoTxt) >= 0)
+		if(reporte_newParametros(idTxt,codigo,nombre,fobTxt,  nArancelaria, mCubicosTxt,  cmCubicosTxt,  costoArgentinoAereoTxt,  costoArgentinoMaritimoTxt) >= 0)
 		{
 			pArancelaria_getNomenclaturaArancelaria(pArancelaria,nArancelaria);
-			auxReporte = (Reporte*)reporte_newParametros(idTxt,codigo,nombre,descripcion,fobTxt,  nArancelaria, mCubicosTxt,  cmCubicosTxt,  costoArgentinoAereoTxt,  costoArgentinoMaritimoTxt);
+			auxReporte = (Reporte*)reporte_newParametros(idTxt,codigo,nombre,fobTxt, nArancelaria, mCubicosTxt,  cmCubicosTxt,  costoArgentinoAereoTxt,  costoArgentinoMaritimoTxt);
 			ll_add(pArrayListReporte,auxReporte);
 
 			retorno = 0;
@@ -157,7 +155,7 @@ static int reporteController_ListarReportes(LinkedList* pArrayListReporte)
 	int retorno = 0;
 	if(pArrayListReporte != NULL)
 	{
-		printf("%s%20s%20s%20s%20s%20s%20s%20s\n","ID","NOMBRE","CODIGO","DESCRIPCION","FOB","N. ARANCELARIA", "C. AEREO","C. MARITIMO");
+		printf("%s%20s%20s%20s%20s%20s%20s\n","ID","NOMBRE","CODIGO","FOB","N. ARANCELARIA", "C. AEREO","C. MARITIMO");
 		for(int i=0; i < ll_len(pArrayListReporte); i++)
 		{
 			auxReporte= (Reporte*)ll_get(pArrayListReporte,i);

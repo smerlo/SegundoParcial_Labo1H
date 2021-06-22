@@ -12,13 +12,13 @@ int main(void) {
 	setbuf(stdout,NULL);
 	int option;
 
-	LinkedList* listaArticulos = ll_newLinkedList();
 	LinkedList* listapArancelarias = ll_newLinkedList();
+	LinkedList* listaArticulos = ll_newLinkedList();
 	LinkedList* listaTMaritimo = ll_newLinkedList();
 	LinkedList* listaTAereo = ll_newLinkedList();
 	LinkedList* listReporte = ll_newLinkedList();
-	articuloController_loadArticulosFromText("Articulos.csv",listaArticulos);
-	pArancelariaController_loadPArancelariaFromText("Posiciones_Arancelarias.csv",listapArancelarias);
+	pArancelariaController_loadPArancelariaFromText("posicion.csv",listapArancelarias);
+	articuloController_loadArticulosFromText("articulo.csv",listaArticulos,listapArancelarias);
 	tAereoController_loadTAereoFromText("Transporte_Aereo.csv",listaTAereo);
 	tMaritimoController_loadTMaritimoFromText("Transporte_Maritimo.csv",listaTMaritimo);
 
@@ -35,7 +35,7 @@ int main(void) {
 	        {
 
 				case 1:
-					articuloController_menuArticulos(listaArticulos);
+					articuloController_menuArticulos(listaArticulos, listapArancelarias);
 					break;
 				case 2:
 					pArancelariaController_menuPArancelaria(listapArancelarias);

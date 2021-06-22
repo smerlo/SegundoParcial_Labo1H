@@ -200,10 +200,12 @@ int pArancelaria_imprimir(pArancelaria* this)
 		pArancelaria_getTasa(this,&pocentaje_tasaEstadistica);
 		pArancelaria_getTipoLicencia(this, &tipo_licencia);
 
-		printf("%d%15s%15f%15f%15f%15d\n",id,nomenclatura_arancelaria,porcentaje_seguro,porcentaje_importacion,pocentaje_tasaEstadistica,tipo_licencia);
+		printf("%d%30s%15f%15f%15f%15d\n",id,nomenclatura_arancelaria,porcentaje_seguro,porcentaje_importacion,pocentaje_tasaEstadistica,tipo_licencia);
 	}
 	return retorno;
 }
+
+
 
 float pArancelaria_CalcularCostoArgentino(pArancelaria* this, float baseImponible)
 {

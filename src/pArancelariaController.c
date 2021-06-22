@@ -5,6 +5,7 @@
 #include "auxiliar.h"
 #include "pArancelariaController.h"
 #include "parser.h"
+#include "string.h"
 
 static int idMaximoEncontrado(LinkedList* pArrayListpArancelaria, int* idMaximo);
 static int pArancelariaController_saveAsText(char* path , LinkedList* pArrayListpArancelaria);
@@ -92,7 +93,7 @@ int pArancelariaController_addPArancelaria(LinkedList* pArrayListpArancelaria)
 			aux_getNumeroFlotante(&porcentaje_seguro,"\nIngrese el % de seguro: \n","\nERROR\n", 0, 100, 2) == 0 &&
 			aux_getNumeroFlotante(&porcentaje_importacion,"\nIngrese el % de importacion: \n","\nERROR\n", 0, 100, 2) == 0 &&
 			aux_getNumeroFlotante(&pocentaje_tasaEstadistica,"\nIngrese el % de tasa estadistica: \n","\nERROR\n", 0, 100, 2) == 0 &&
-			aux_getNumeroInt(&tipo_licencia,"Ingrese el tipo de licencia:\n", "Valor incorrecto\n",0, 1,2) == 0 )
+			aux_getNumeroInt(&tipo_licencia,"Ingrese el tipo de licencia (0 NO AUTOMATICA / 1 AUTOMATICA):\n", "Valor incorrecto\n",0, 1,2) == 0 )
 		{
 			if(ll_len(pArrayListpArancelaria) == 0)
 			{
@@ -117,7 +118,7 @@ int pArancelariaController_addPArancelaria(LinkedList* pArrayListpArancelaria)
 
 				retorno = 1;
 				printf("Articulo creado correctamente con ID %d\n\n", id);
-				pArancelariaController_saveAsText("Posiciones_Arancelarias.csv" ,pArrayListpArancelaria);
+				pArancelariaController_saveAsText("posicion.csv" ,pArrayListpArancelaria);
 			}
 		}
 	}
@@ -163,16 +164,25 @@ static int pArancelariaController_saveAsText(char* path , LinkedList* pArrayList
 	int retorno = 0;
 	pArancelaria* auxpArancelaria;
 	FILE* pFile=fopen(path,"w");
+	char licencia[14];
 	if(pFile!=NULL && pArrayListpArancelaria !=NULL)
 	{
-		fprintf(pFile,"id,nomenclatura,seguro,tasa_importacion,tasa_estadistica,licencia\n");
+		fprintf(pFile,"nomenclatura,seguro,tasa_importacion,tasa_estadistica,licencia\n");
 		for(int i= 0; i < ll_len(pArrayListpArancelaria); i++)
 		{
 			auxpArancelaria=ll_get(pArrayListpArancelaria,i);
 			if(auxpArancelaria != NULL)
 			{
-				 fprintf(pFile,"%d,%s,%f,%f,%f,%d\n",auxpArancelaria->id,auxpArancelaria->nomenclatura_arancelaria,
-						 auxpArancelaria->porcentaje_seguro,auxpArancelaria->porcentaje_importacion,auxpArancelaria->pocentaje_tasaEstadistica,auxpArancelaria->tipo_licencia);
+				if(auxpArancelaria->tipo_licencia == 0)
+				{
+					strcpy(licencia,"NO_AUTOMATICA");
+				}
+				else
+				{
+					strcpy(licencia,"AUTOMATICA");
+				}
+				 fprintf(pFile,"%s,%f,%f,%f,%s\n",auxpArancelaria->nomenclatura_arancelaria,
+						 auxpArancelaria->porcentaje_seguro,auxpArancelaria->porcentaje_importacion,auxpArancelaria->pocentaje_tasaEstadistica,licencia);
 			}
 		}
 		fclose(pFile);
@@ -182,13 +192,13 @@ static int pArancelariaController_saveAsText(char* path , LinkedList* pArrayList
 	return retorno;
 }
 
-static int pArancelariaController_ListarPosiciones(LinkedList* pArrayListpArancelaria)
+int pArancelariaController_ListarPosiciones(LinkedList* pArrayListpArancelaria)
 {
 	pArancelaria* auxPArancelaria;
 	int retorno = 0;
 	if(pArrayListpArancelaria != NULL)
 	{
-		printf("%s%15s%15s%15s%15s%15s\n","ID","NOMENCLATURA","SEGURO","% IMPORTACION","T. ESTADISTICA","LICENCIA");
+		printf("%s%30s%15s%15s%15s%15s\n","ID","NOMENCLATURA","SEGURO","% IMPORTACION","T. ESTADISTICA","LICENCIA");
 		for(int i=0; i < ll_len(pArrayListpArancelaria); i++)
 		{
 			auxPArancelaria= (pArancelaria*)ll_get(pArrayListpArancelaria,i);
@@ -263,7 +273,7 @@ int pArancelariaController_editpArancelaria(LinkedList* pArrayListpArancelaria)
 						aux_getNumeroFlotante(&porcentaje_seguro,"\nIngrese el % de seguro: \n","\nERROR\n", 0, 100, 2) == 0 &&
 						aux_getNumeroFlotante(&porcentaje_importacion,"\nIngrese el % de importacion: \n","\nERROR\n", 0, 100, 2) == 0 &&
 						aux_getNumeroFlotante(&pocentaje_tasaEstadistica,"\nIngrese el % de tasa estadistica: \n","\nERROR\n", 0, 100, 2) == 0 &&
-						aux_getNumeroInt(&tipo_licencia,"Ingrese el tipo de licencia:\n", "Valor incorrecto\n",0, 1,2) == 0 )
+						aux_getNumeroInt(&tipo_licencia,"Ingrese el tipo de licencia (0 NO AUTOMATICA / 1 AUTOMATICA):\n", "Valor incorrecto\n",0, 1,2) == 0 )
 				{
 					if(aux_getNumeroInt(&confirma,"Confirma los cambios? 0=NO 1=SI\n","Opcion incorrecta.Reingrese.\n",0,1, 2)== 0 && confirma == 1)
 					{
@@ -273,7 +283,7 @@ int pArancelariaController_editpArancelaria(LinkedList* pArrayListpArancelaria)
 						pArancelaria_setTasa(auxPArancelaria,pocentaje_tasaEstadistica);
 						pArancelaria_setTipoLicencia(auxPArancelaria,tipo_licencia);
 
-						pArancelariaController_saveAsText("Posiciones_Arancelarias.csv" ,pArrayListpArancelaria);
+						pArancelariaController_saveAsText("posicion.csv" ,pArrayListpArancelaria);
 						printf("La posicion arancelaria fue editada correctamente.\n\n");
 					}
 					else
@@ -309,12 +319,12 @@ int pArancelariaController_removePArancelaria(LinkedList* pArrayListpArancelaria
 				{
 					ll_remove(pArrayListpArancelaria,indicepArancelaria);
 					pArancelaria_delete(auxpArancelaria);
-					pArancelariaController_saveAsText("Posiciones_Arancelarias.csv" ,pArrayListpArancelaria);
-					printf("Empleado eliminado correctamente\n\n");
+					pArancelariaController_saveAsText("posicion.csv" ,pArrayListpArancelaria);
+					printf("Posicion Arancelaria eliminada correctamente\n\n");
 				}
 				else
 				{
-					printf("No se ha eliminado ningun empleado.\n\n");
+					printf("No se ha eliminado ninguna Posicion Arancelaria.\n\n");
 				}
 				retorno = 1;
 			}
@@ -322,3 +332,5 @@ int pArancelariaController_removePArancelaria(LinkedList* pArrayListpArancelaria
 	}
 	return retorno;
 }
+
+

@@ -3,3 +3,5 @@ id,codigo,nombre,descripcion,fob,pArancelaria,ancho,alto,profundidad,peso,pais
 1,PTR450,Punteros 30cm,x100 unidades,65.430000,0,5.000000,5.000000,2.000000,1.470000,CHINA
 2,AS400,Aspiradora robot,Aspiradora robot bosch,100.300003,0,50.000000,50.000000,50.000000,3.000000,FRANCIA
 3,BC2345,Boya colorida,Pack 3u,15.400000,0,10.000000,15.000000,5.000000,0.400000,Uruguay
+4,AF5664,Asiento Feo,Asiento feo naranja,60.450001,0,150.000000,180.000000,90.000000,6.000000,Escocia
+5,TM4321,Teclado Mecanico,Marca MSI,15.700000,1,30.000000,4.000000,15.000000,0.540000,CHINA

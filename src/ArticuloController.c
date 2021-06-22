@@ -5,10 +5,12 @@
 #include "ArticuloController.h"
 #include "parser.h"
 #include "auxiliar.h"
+#include "pArancelariaController.h"
+#include "Posicion_arancelaria.h"
 
 
 static int idMaximoEncontrado(LinkedList* pArrayListArticulo, int* idMaximo);
-static int articuloController_saveAsText(char* path , LinkedList* pArrayListArticulos);
+static int articuloController_saveAsText(char* path , LinkedList* pArrayListArticulos,LinkedList* listapArancelarias);
 static int articuloController_ListarArticulos(LinkedList* pArrayListEmployee);
 static int buscarPorId(LinkedList* pArrayListArticulos, int id);
 /** \brief Carga los datos de los articulos desde el archivo data.csv (modo texto).
@@ -18,7 +20,7 @@ static int buscarPorId(LinkedList* pArrayListArticulos, int id);
  * \return int
  *
  */
-int articuloController_loadArticulosFromText(char* path , LinkedList* pArrayListArticulo)
+int articuloController_loadArticulosFromText(char* path , LinkedList* pArrayListArticulo, LinkedList* listapArancelarias)
 {
 	FILE* pArchivo;
 	int retorno= 0;
@@ -28,14 +30,14 @@ int articuloController_loadArticulosFromText(char* path , LinkedList* pArrayList
 	}
 	if(pArchivo != NULL && pArrayListArticulo != NULL)
 	{
-		retorno = parser_ArticuloFromText(pArchivo,pArrayListArticulo);
+		retorno = parser_ArticuloFromText(pArchivo,pArrayListArticulo,listapArancelarias);
 		printf("Archivo cargado correctamente\n");
 	}
 	fclose(pArchivo);
 	return retorno;
 }
 
-int articuloController_menuArticulos(LinkedList* pArrayListArticulo)
+int articuloController_menuArticulos(LinkedList* pArrayListArticulo, LinkedList* listapArancelarias)
 {
 	int retorno = -1;
 	int option;
@@ -43,26 +45,26 @@ int articuloController_menuArticulos(LinkedList* pArrayListArticulo)
 	{
 		retorno = 0;
 		do{
-			    	aux_getNumeroInt(&option,"1. Alta Articulo\n"
-			    	        						  "2. Modificar Articulo\n"
-			    	        						  "3. Eliminar Articulo\n"
-			    	        						  "4. Salir\n",
-			    	    							  "Opción inválida\n",
-			    	    							  1,4,2);
-			        switch(option)
-			        {
+			aux_getNumeroInt(&option,"1. Alta Articulo\n"
+									  "2. Modificar Articulo\n"
+									  "3. Eliminar Articulo\n"
+									  "4. Salir\n",
+									  "Opción inválida\n",
+									  1,4,2);
+			switch(option)
+			{
 
-						case 1:
-							articuloController_addArticulo(pArrayListArticulo);
-							break;
-						case 2:
-							articuloController_editArticulo(pArrayListArticulo);
-							break;
-						case 3:
-							articuloController_removeArticulo(pArrayListArticulo);
-							break;
-			        }
-			    }while(option != 4);
+				case 1:
+					articuloController_addArticulo(pArrayListArticulo,listapArancelarias);
+					break;
+				case 2:
+					articuloController_editArticulo(pArrayListArticulo,listapArancelarias);
+					break;
+				case 3:
+					articuloController_removeArticulo(pArrayListArticulo,listapArancelarias);
+					break;
+			}
+		}while(option != 4);
 	}
 	return retorno;
 }
@@ -72,14 +74,13 @@ int articuloController_menuArticulos(LinkedList* pArrayListArticulo)
  * \return int
  *
  */
-int articuloController_addArticulo(LinkedList* pArrayListArticulo)
+int articuloController_addArticulo(LinkedList* pArrayListArticulo,LinkedList* listapArancelarias)
 {
 	int retorno=-0;
 	Articulo* pAuxiliarArticulo;
 	int id;
 	char codigo[24];
 	char nombre[128];
-	char descripcion[256];
 	float fob;
 	int pArancelaria;
 	float ancho;
@@ -99,42 +100,47 @@ int articuloController_addArticulo(LinkedList* pArrayListArticulo)
 	{
 		if(aux_getString(codigo,24,"\nIngrese el codigo del articulo: \n","\nERROR\n",2) == 0 &&
 			aux_getString(nombre,128,"\nIngrese el nombre del articulo: \n","\nERROR\n",2) == 0 &&
-			aux_getString(descripcion,256,"\nIngrese la descripcion del articulo: \n","\nERROR\n",2) == 0 &&
+
 			aux_getNumeroFlotante(&fob,"\nIngrese FOB del articulo: \n","\nERROR\n", 0, 1000000, 2) == 0 &&
-			aux_getNumeroInt(&pArancelaria,"Ingrese el id de posicion arancelaria\n", "Valor incorrecto\n",0, 100000,2) == 0 &&
+
 			aux_getNumeroFlotante(&ancho,"\nIngrese el ancho en cm del articulo: \n","\nERROR\n", 0, 10000000, 2) == 0 &&
 			aux_getNumeroFlotante(&alto,"\nIngrese el alto en cm del articulo: \n","\nERROR\n", 0, 10000000, 2) == 0 &&
 			aux_getNumeroFlotante(&profundidad,"\nIngrese la profundidad en cm del articulo: \n","\nERROR\n", 0, 10000000, 2) == 0 &&
 			aux_getNumeroFlotante(&peso,"\nIngrese el peso en kg del articulo: \n","\nERROR\n", 0, 10000000, 2) == 0 &&
 			aux_getString(paisFabricacion,48,"\nIngrese el pais de origen del articulo: \n","\nERROR\n",2) == 0)
 		{
-			if(ll_len(pArrayListArticulo) == 0)
+			pArancelariaController_ListarPosiciones(listapArancelarias);
+			if(aux_getNumeroInt(&pArancelaria,"Ingrese el id de posicion arancelaria\n", "Valor incorrecto\n",0, ll_len(listapArancelarias)-1,2) == 0)
 			{
-				id = 0;
-			}
-			else
-			{
-				idMaximoEncontrado(pArrayListArticulo, &id);
-				id = id + 1;
+				if(ll_len(pArrayListArticulo) == 0)
+				{
+					id = 0;
+				}
+				else
+				{
+					idMaximoEncontrado(pArrayListArticulo, &id);
+					id = id + 1;
 
-			}
-			sprintf(idTxt,"%d",id);
-			sprintf(fobTxt,"%f",fob);
-			sprintf(pArancelariaTxt,"%d",pArancelaria);
-			sprintf(anchoTxt,"%f",ancho);
-			sprintf(altoTxt,"%f",alto);
-			sprintf(profundidadTxt,"%f",profundidad);
-			sprintf(pesoTxt,"%f",peso);
+				}
+				sprintf(idTxt,"%d",id);
+				sprintf(fobTxt,"%f",fob);
+				sprintf(pArancelariaTxt,"%d",pArancelaria);
+				sprintf(anchoTxt,"%f",ancho);
+				sprintf(altoTxt,"%f",alto);
+				sprintf(profundidadTxt,"%f",profundidad);
+				sprintf(pesoTxt,"%f",peso);
 
-			if(articulo_newParametros(idTxt,codigo,nombre,descripcion,fobTxt,pArancelariaTxt,anchoTxt,altoTxt,profundidadTxt,pesoTxt,paisFabricacion) >= 0)
-			{
-				pAuxiliarArticulo = (Articulo*)articulo_newParametros(idTxt,codigo,nombre,descripcion,fobTxt,pArancelariaTxt,anchoTxt,altoTxt,profundidadTxt,pesoTxt,paisFabricacion);
-				ll_add(pArrayListArticulo,pAuxiliarArticulo);
+				if(articulo_newParametros(idTxt,codigo,nombre,fobTxt,pArancelariaTxt,anchoTxt,altoTxt,profundidadTxt,pesoTxt,paisFabricacion) >= 0)
+				{
+					pAuxiliarArticulo = (Articulo*)articulo_newParametros(idTxt,codigo,nombre,fobTxt,pArancelariaTxt,anchoTxt,altoTxt,profundidadTxt,pesoTxt,paisFabricacion);
+					ll_add(pArrayListArticulo,pAuxiliarArticulo);
 
-				retorno = 1;
-				printf("Articulo creado correctamente con ID %d\n\n", id);
-				articuloController_saveAsText("Articulos.csv" ,pArrayListArticulo);
+					retorno = 1;
+					printf("Articulo creado correctamente con ID %d\n\n", id);
+					articuloController_saveAsText("articulo.csv" ,pArrayListArticulo,listapArancelarias);
+				}
 			}
+
 		}
 	}
 	return retorno;
@@ -174,21 +180,25 @@ static int idMaximoEncontrado(LinkedList* pArrayListArticulo, int* idMaximo)
 	return retorno;
 }
 
-static int articuloController_saveAsText(char* path , LinkedList* pArrayListArticulos)
+static int articuloController_saveAsText(char* path , LinkedList* pArrayListArticulos,LinkedList* listapArancelarias)
 {
 	int retorno = 0;
 	Articulo* auxArticulo;
+	int pArancelariaIndice;
+	pArancelaria* auxParan;
 	FILE* pFile=fopen(path,"w");
 	if(pFile!=NULL && pArrayListArticulos !=NULL)
 	{
-		fprintf(pFile,"id,codigo,nombre,descripcion,fob,pArancelaria,ancho,alto,profundidad,peso,pais\n");
+		fprintf(pFile,"codigo,item,origen,fob,kg,alto,ancho,profundo,ncm\n");
 		for(int i= 0; i < ll_len(pArrayListArticulos); i++)
 		{
 			auxArticulo=ll_get(pArrayListArticulos,i);
 			if(auxArticulo != NULL)
 			{
-				 fprintf(pFile,"%d,%s,%s,%s,%f,%d,%f,%f,%f,%f,%s\n",auxArticulo->id,auxArticulo->codigo,auxArticulo->nombre,auxArticulo->descripcion,
-						 auxArticulo->fob,auxArticulo->pArancelaria,auxArticulo->ancho,auxArticulo->alto,auxArticulo->profundidad,auxArticulo->peso,auxArticulo->paisFabricacion);
+				pArancelariaIndice= pArancelariaController_buscarPorId(listapArancelarias, auxArticulo->pArancelaria);
+				auxParan= (pArancelaria*)ll_get(listapArancelarias,pArancelariaIndice);
+				 fprintf(pFile,"%s,%s,%s,%f,%f,%f,%f,%f,%s\n",auxArticulo->codigo,auxArticulo->nombre,auxArticulo->paisFabricacion,auxArticulo->fob,auxArticulo->peso,
+						 	 	 	 	 	 	 	 	 	 	 auxArticulo->alto,auxArticulo->ancho,auxArticulo->profundidad,auxParan->nomenclatura_arancelaria);
 			}
 		}
 		fclose(pFile);
@@ -204,7 +214,7 @@ static int articuloController_ListarArticulos(LinkedList* pArrayListArticulos)
 	int retorno = 0;
 	if(pArrayListArticulos != NULL)
 	{
-		printf("%s%15s%15s%30s%15s%15s%15s%15s%15s%15s%15s\n","ID","CODIGO","NOMBRE","DESCRIPCION","FOB","P. ARANCELARIA", "ANCHO","ALTO","PROFUNDIDAD","PESO","P. FABRICACION");
+		printf("%s%15s%15s%15s%15s%15s%15s%15s%15s%15s\n","ID","CODIGO","NOMBRE","FOB","P. ARANCELARIA", "ANCHO","ALTO","PROFUNDIDAD","PESO","P. FABRICACION");
 		for(int i=0; i < ll_len(pArrayListArticulos); i++)
 		{
 			auxArticulo= (Articulo*)ll_get(pArrayListArticulos,i);
@@ -251,7 +261,7 @@ static int buscarPorId(LinkedList* pArrayListArticulos, int id)
  * \return int
 
  */
-int articuloController_editArticulo(LinkedList* pArrayListArticulos)
+int articuloController_editArticulo(LinkedList* pArrayListArticulos,LinkedList* listapArancelarias)
 {
 	int retorno = 0;
 	Articulo* auxArticulo;
@@ -259,7 +269,6 @@ int articuloController_editArticulo(LinkedList* pArrayListArticulos)
 	int id;
 	char codigo[24];
 	char nombre[128];
-	char descripcion[256];
 	float fob;
 	int pArancelaria;
 	float ancho;
@@ -282,35 +291,36 @@ int articuloController_editArticulo(LinkedList* pArrayListArticulos)
 				articulo_imprimir(auxArticulo);
 				if(aux_getString(codigo,24,"\nIngrese el codigo del articulo: \n","\nERROR\n",2) == 0 &&
 						aux_getString(nombre,128,"\nIngrese el nombre del articulo: \n","\nERROR\n",2) == 0 &&
-						aux_getString(descripcion,256,"\nIngrese la descripcion del articulo: \n","\nERROR\n",2) == 0 &&
 						aux_getNumeroFlotante(&fob,"\nIngrese FOB del articulo: \n","\nERROR\n", 0, 1000000, 2) == 0 &&
-						aux_getNumeroInt(&pArancelaria,"Ingrese el id de posicion arancelaria\n", "Valor incorrecto\n",0, 10000,2) == 0 &&
 						aux_getNumeroFlotante(&ancho,"\nIngrese el ancho en cm del articulo: \n","\nERROR\n", 0, 1000000, 2) == 0 &&
 						aux_getNumeroFlotante(&alto,"\nIngrese el alto en cm del articulo: \n","\nERROR\n", 0, 1000000, 2) == 0 &&
 						aux_getNumeroFlotante(&profundidad,"\nIngrese la profundidad en cm del articulo: \n","\nERROR\n", 0, 1000000, 2) == 0 &&
 						aux_getNumeroFlotante(&peso,"\nIngrese el peso en kg del articulo: \n","\nERROR\n", 0, 1000000, 2) == 0 &&
 						aux_getString(paisFabricacion,48,"\nIngrese el pais de origen del articulo: \n","\nERROR\n",2) == 0)
 				{
-					if(aux_getNumeroInt(&confirma,"Confirma los cambios? 0=NO 1=SI\n","Opcion incorrecta.Reingrese.\n",0,1, 2)== 0 && confirma == 1)
+					pArancelariaController_ListarPosiciones(listapArancelarias);
+					if(aux_getNumeroInt(&pArancelaria,"Ingrese el id de posicion arancelaria\n", "Valor incorrecto\n",0, ll_len(listapArancelarias)-1,2) == 0)
 					{
-						articulo_setCodigo(auxArticulo,codigo);
-						articulo_setNombre(auxArticulo,nombre);
-						articulo_setDescripcion(auxArticulo,descripcion);
-						articulo_setFob(auxArticulo,fob);
-						articulo_setpArancelaria(auxArticulo,pArancelaria);
-						articulo_setAncho(auxArticulo,ancho);
-						articulo_setAlto(auxArticulo,alto);
-						articulo_setProfundidad(auxArticulo,profundidad);
-						articulo_setPeso(auxArticulo,peso);
-						articulo_setPaisFabricacion(auxArticulo,paisFabricacion);
-						articuloController_saveAsText("Articulos.csv" ,pArrayListArticulos);
-						printf("El empleado fue editado correctamente.\n\n");
+						if(aux_getNumeroInt(&confirma,"Confirma los cambios? 0=NO 1=SI\n","Opcion incorrecta.Reingrese.\n",0,1, 2)== 0 && confirma == 1)
+						{
+							articulo_setCodigo(auxArticulo,codigo);
+							articulo_setNombre(auxArticulo,nombre);
+							articulo_setFob(auxArticulo,fob);
+							articulo_setpArancelaria(auxArticulo,pArancelaria);
+							articulo_setAncho(auxArticulo,ancho);
+							articulo_setAlto(auxArticulo,alto);
+							articulo_setProfundidad(auxArticulo,profundidad);
+							articulo_setPeso(auxArticulo,peso);
+							articulo_setPaisFabricacion(auxArticulo,paisFabricacion);
+							articuloController_saveAsText("articulo.csv" ,pArrayListArticulos,listapArancelarias);
+							printf("El articulo fue editado correctamente.\n\n");
+						}
+						else
+						{
+							printf("No se ha realizado ningun cambio.\n\n");
+						}
+						retorno = 1;
 					}
-					else
-					{
-						printf("No se ha realizado ningun cambio.\n\n");
-					}
-					retorno = 1;
 				}
 			}
 		}
@@ -325,7 +335,7 @@ int articuloController_editArticulo(LinkedList* pArrayListArticulos)
  * \return int
  *
  */
-int articuloController_removeArticulo(LinkedList* pArrayListArticulos)
+int articuloController_removeArticulo(LinkedList* pArrayListArticulos,LinkedList* listapArancelarias)
 {
 	int retorno = 0;
 	int indiceArticulo;
@@ -346,7 +356,7 @@ int articuloController_removeArticulo(LinkedList* pArrayListArticulos)
 				{
 					ll_remove(pArrayListArticulos,indiceArticulo);
 					articulo_delete(auxArticulo);
-					articuloController_saveAsText("Articulos.csv" ,pArrayListArticulos);
+					articuloController_saveAsText("articulo.csv" ,pArrayListArticulos,listapArancelarias);
 					printf("Empleado eliminado correctamente\n\n");
 				}
 				else

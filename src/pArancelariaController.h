@@ -6,5 +6,5 @@ int pArancelariaController_addPArancelaria(LinkedList* pArrayListpArancelaria);
 int pArancelariaController_editpArancelaria(LinkedList* pArrayListpArancelaria);
 int pArancelariaController_removePArancelaria(LinkedList* pArrayListpArancelaria);
 int pArancelariaController_buscarPorId(LinkedList* pArrayListpArancelaria, int id);
-
+int pArancelariaController_ListarPosiciones(LinkedList* pArrayListpArancelaria);
 #endif /* PARANCELARIACONTROLLER_H_ */
