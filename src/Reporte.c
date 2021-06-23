@@ -437,3 +437,24 @@ int reporte_CompararValorMaritimo(void* compareOne,void* compareTwo)
 	}
 	return retorno;
 }
+
+int reporte_imprimirParancelariaMayor(Reporte* this)
+{
+	int retorno=0;
+	char nombre[48];
+	char nArancelaria[20];
+	float costoAereo;
+
+
+
+	if(this != NULL)
+	{
+		retorno = 1;
+		reporte_getNombre(this,nombre);
+		reporte_getpArancelaria(this, nArancelaria);
+		reporte_getvalorAereo(this,&costoAereo);
+
+		printf("%20s%20s%20f\n",nombre,nArancelaria,costoAereo);
+	}
+	return retorno;
+}

@@ -8,6 +8,8 @@
 #include "reporteController.h"
 #include "auxiliar.h"
 
+//Hacer un informe que tenga nombre, posicionArancelaria,costoAereo
+//sobre cada posicion arancelaria mostrar el que tenga el aereo mas caro
 int main(void) {
 	setbuf(stdout,NULL);
 	int option;

@@ -342,7 +342,7 @@ float articulo_calcularMetrosCubicos(Articulo* this)
 		articulo_getAncho(this,&ancho);
 		articulo_getAlto(this,&alto);
 		articulo_getProfundidad(this, &profundidad);
-		retorno = (ancho/100)*(ancho/100)*(profundidad/100);
+		retorno = (alto/100)*(ancho/100)*(profundidad/100);
 	}
 	return retorno;
 }

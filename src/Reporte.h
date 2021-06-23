@@ -44,4 +44,5 @@ int reporte_CompararNArancelaria(void* compareOne,void* compareTwo);
 int reporte_CompararFob(void* compareOne,void* compareTwo);
 int reporte_CompararValorAereo(void* compareOne,void* compareTwo);
 int reporte_CompararValorMaritimo(void* compareOne,void* compareTwo);
+int reporte_imprimirParancelariaMayor(Reporte* this);
 #endif /* REPORTE_H_ */

@@ -16,6 +16,7 @@ static float calcularBaseImponible(float fob,float pSeguro, float flete);
 static int crearReporte(LinkedList* pArrayListReporte,Articulo* articulo, pArancelaria* pArancelaria, float mCubicos, float cmCubicos,float costoArgentinoAereo, float costoArgentinoMaritimo);
 static int reporteController_ListarReportes(LinkedList* pArrayListReporte);
 static int reporteController_sortReporte(LinkedList* pArrayListReporte);
+static int reporteController_ListarReportesPArancelaria(LinkedList* pArrayListReporte, LinkedList* pArrayListPArancelarias);
 
 int reporte_menuTAereo(LinkedList* pArrayListReporte,LinkedList* pArrayListArticulos,LinkedList* pArrayListPArancelarias,LinkedList* pArrayListTAereo,LinkedList* pArrayListTMaritimo)
 {
@@ -29,9 +30,10 @@ int reporte_menuTAereo(LinkedList* pArrayListReporte,LinkedList* pArrayListArtic
 			do{
 				aux_getNumeroInt(&option,"1. Imprimir articulos con costos\n"
 										"2. Ordenar articulos con costos\n"
-										  "3. Salir\n",
+										"3. Imprimir pArancelarias con Maximo Aereo\n"
+										  "4. Salir\n",
 										  "Opción inválida\n",
-										  1,3,2);
+										  1,4,2);
 				switch(option)
 				{
 					case 1:
@@ -40,8 +42,11 @@ int reporte_menuTAereo(LinkedList* pArrayListReporte,LinkedList* pArrayListArtic
 					case 2:
 						reporteController_sortReporte(pArrayListReporte);
 						break;
+					case 3:
+						reporteController_ListarReportesPArancelaria(pArrayListReporte,pArrayListPArancelarias);
+						break;
 				}
-			}while(option != 3);
+			}while(option != 4);
 		}
 	}
 	return retorno;
@@ -76,16 +81,23 @@ static int generarReporte(LinkedList* pArrayListReporte,LinkedList* pArrayListAr
 			auxArticulo= (Articulo*)ll_get(pArrayListArticulos,i);
 			pArancelariaIndice= pArancelariaController_buscarPorId(pArrayListPArancelarias, auxArticulo->pArancelaria);
 			pArancelariaAux= (pArancelaria*)ll_get(pArrayListPArancelarias,pArancelariaIndice);
-
+			printf("%d idArt\n",auxArticulo->id);
 			metrosCubicos = articulo_calcularMetrosCubicos(auxArticulo);
+			printf("%f metros_cubicos\n",metrosCubicos);
 			cmCubicos = articulo_calcularCmCubicos(auxArticulo);
 			articulo_getPeso(auxArticulo,&peso);
 			fleteAereo = tAereo_CalcularFlete(tAereoAux,cmCubicos,peso);
 			fleteMaritimo = tMaritimo_CalcularFlete(tMaritimoAux,metrosCubicos);
+			printf("%f flete_Maritimo\n",fleteMaritimo);
 			bImponibleArea = calcularBaseImponible(auxArticulo->fob,pArancelariaAux->porcentaje_seguro,fleteAereo);
+			printf("%f porcentaje_seguro\n", pArancelariaAux->porcentaje_seguro);
 			bImponibleMaritima = calcularBaseImponible(auxArticulo->fob,pArancelariaAux->porcentaje_seguro,fleteMaritimo);
+			printf("%f BaseImponibleMaritima\n",bImponibleMaritima);
+			printf("%s N.Arancelaria\n", pArancelariaAux->nomenclatura_arancelaria);
+
 			costoArgentinoAereo = pArancelaria_CalcularCostoArgentino(pArancelariaAux, bImponibleArea);
 			costoArgentinoMaritimo = pArancelaria_CalcularCostoArgentino(pArancelariaAux, bImponibleMaritima);
+			printf("----------------\n");
 			if(crearReporte(pArrayListReporte,auxArticulo, pArancelariaAux, metrosCubicos, cmCubicos, costoArgentinoAereo, costoArgentinoMaritimo)!= 0)
 			{
 				retorno = -1;
@@ -160,6 +172,55 @@ static int reporteController_ListarReportes(LinkedList* pArrayListReporte)
 		{
 			auxReporte= (Reporte*)ll_get(pArrayListReporte,i);
 			reporte_imprimir(auxReporte);
+		}
+		printf("\n\n");
+		retorno = 1;
+	}
+	return retorno;
+}
+
+static int reporteController_ListarReportesPArancelaria(LinkedList* pArrayListReporte, LinkedList* pArrayListPArancelarias)
+{
+	Reporte* auxReporteUno;
+	Reporte* auxReporteDos;
+	Reporte* auxReporteMayor;
+	pArancelaria* auxParancelaria;
+	int retorno = 0;
+	int flagFirst = 0;
+	int flagCambio = 0;
+	ll_sort(pArrayListReporte,reporte_CompararNArancelaria,0);
+	if(pArrayListReporte != NULL)
+	{
+		printf("%20s%20s%20s\n","NOMBRE","N. ARANCELARIA", "C. AEREO");
+		for(int i=0; i < ll_len(pArrayListPArancelarias); i++)
+		{
+			flagFirst = 0;
+			flagCambio = 0;
+			auxParancelaria =(pArancelaria*)ll_get(pArrayListPArancelarias,i);
+			for(int j=0;j < ll_len(pArrayListReporte);j++)
+			{
+				auxReporteUno = (Reporte*)ll_get(pArrayListReporte,j);
+				auxReporteDos = (Reporte*)ll_get(pArrayListReporte,j+1);
+				if(auxReporteUno != NULL && auxReporteDos != NULL && strcmp(auxReporteUno->pArancelaria,auxParancelaria->nomenclatura_arancelaria) == 0 &&
+						strcmp(auxReporteUno->pArancelaria,auxReporteDos->pArancelaria) == 0)
+				{
+					if(flagFirst == 0)
+					{
+						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j);
+						flagFirst = 1;
+						flagCambio = 1;
+					}else
+					if(auxReporteMayor->valorAereo < auxReporteDos->valorAereo)
+					{
+						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j+1);
+						flagCambio = 1;
+					}
+				}
+			}
+			if(flagCambio != 0 )
+			{
+				reporte_imprimirParancelariaMayor(auxReporteMayor);
+			}
 		}
 		printf("\n\n");
 		retorno = 1;

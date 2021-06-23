@@ -214,6 +214,8 @@ float pArancelaria_CalcularCostoArgentino(pArancelaria* this, float baseImponibl
 	float valorTasa;
 	if(this != NULL && baseImponible > 0)
 	{
+		printf("%f porcentaje_importacion\n",this->porcentaje_importacion );
+		printf("%f porcentaje_tasa\n",this->pocentaje_tasaEstadistica );
 		valorImportacion = (this->porcentaje_importacion * baseImponible) / 100;
 		valorTasa = (this->pocentaje_tasaEstadistica * baseImponible) / 100;
 		retorno = baseImponible + valorImportacion + valorTasa;
