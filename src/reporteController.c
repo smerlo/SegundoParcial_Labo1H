@@ -81,23 +81,23 @@ static int generarReporte(LinkedList* pArrayListReporte,LinkedList* pArrayListAr
 			auxArticulo= (Articulo*)ll_get(pArrayListArticulos,i);
 			pArancelariaIndice= pArancelariaController_buscarPorId(pArrayListPArancelarias, auxArticulo->pArancelaria);
 			pArancelariaAux= (pArancelaria*)ll_get(pArrayListPArancelarias,pArancelariaIndice);
-			printf("%d idArt\n",auxArticulo->id);
+			//printf("%d idArt\n",auxArticulo->id);
 			metrosCubicos = articulo_calcularMetrosCubicos(auxArticulo);
-			printf("%f metros_cubicos\n",metrosCubicos);
+			//printf("%f metros_cubicos\n",metrosCubicos);
 			cmCubicos = articulo_calcularCmCubicos(auxArticulo);
 			articulo_getPeso(auxArticulo,&peso);
 			fleteAereo = tAereo_CalcularFlete(tAereoAux,cmCubicos,peso);
 			fleteMaritimo = tMaritimo_CalcularFlete(tMaritimoAux,metrosCubicos);
-			printf("%f flete_Maritimo\n",fleteMaritimo);
+			//printf("%f flete_Maritimo\n",fleteMaritimo);
 			bImponibleArea = calcularBaseImponible(auxArticulo->fob,pArancelariaAux->porcentaje_seguro,fleteAereo);
-			printf("%f porcentaje_seguro\n", pArancelariaAux->porcentaje_seguro);
+			//printf("%f porcentaje_seguro\n", pArancelariaAux->porcentaje_seguro);
 			bImponibleMaritima = calcularBaseImponible(auxArticulo->fob,pArancelariaAux->porcentaje_seguro,fleteMaritimo);
-			printf("%f BaseImponibleMaritima\n",bImponibleMaritima);
-			printf("%s N.Arancelaria\n", pArancelariaAux->nomenclatura_arancelaria);
+			//printf("%f BaseImponibleMaritima\n",bImponibleMaritima);
+			//printf("%s N.Arancelaria\n", pArancelariaAux->nomenclatura_arancelaria);
 
 			costoArgentinoAereo = pArancelaria_CalcularCostoArgentino(pArancelariaAux, bImponibleArea);
 			costoArgentinoMaritimo = pArancelaria_CalcularCostoArgentino(pArancelariaAux, bImponibleMaritima);
-			printf("----------------\n");
+			//printf("----------------\n");
 			if(crearReporte(pArrayListReporte,auxArticulo, pArancelariaAux, metrosCubicos, cmCubicos, costoArgentinoAereo, costoArgentinoMaritimo)!= 0)
 			{
 				retorno = -1;
@@ -209,7 +209,7 @@ static int reporteController_ListarReportesPArancelaria(LinkedList* pArrayListRe
 						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j);
 						flagFirst = 1;
 						flagCambio = 1;
-					}else
+					}
 					if(auxReporteMayor->valorAereo < auxReporteDos->valorAereo)
 					{
 						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j+1);
