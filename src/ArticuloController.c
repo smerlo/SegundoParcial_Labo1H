@@ -31,7 +31,7 @@ int articuloController_loadArticulosFromText(char* path , LinkedList* pArrayList
 	if(pArchivo != NULL && pArrayListArticulo != NULL)
 	{
 		retorno = parser_ArticuloFromText(pArchivo,pArrayListArticulo,listapArancelarias);
-		printf("Archivo cargado correctamente\n");
+		//printf("Archivo cargado correctamente\n");
 	}
 	fclose(pArchivo);
 	return retorno;

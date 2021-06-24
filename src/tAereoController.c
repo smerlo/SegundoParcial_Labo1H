@@ -26,7 +26,7 @@ int tAereoController_loadTAereoFromText(char* path , LinkedList* pArrayListtAere
 	if(pArchivo != NULL && pArrayListtAereo != NULL)
 	{
 		retorno = parser_tAereoFromText(pArchivo,pArrayListtAereo);
-		printf("Archivo cargado correctamente\n");
+		//printf("Archivo cargado correctamente\n");
 	}
 	fclose(pArchivo);
 	return retorno;

@@ -19,10 +19,15 @@ int main(void) {
 	LinkedList* listaTMaritimo = ll_newLinkedList();
 	LinkedList* listaTAereo = ll_newLinkedList();
 	LinkedList* listReporte = ll_newLinkedList();
-	pArancelariaController_loadPArancelariaFromText("posicion.csv",listapArancelarias);
-	articuloController_loadArticulosFromText("articulo.csv",listaArticulos,listapArancelarias);
-	tAereoController_loadTAereoFromText("Transporte_Aereo.csv",listaTAereo);
-	tMaritimoController_loadTMaritimoFromText("Transporte_Maritimo.csv",listaTMaritimo);
+	if(pArancelariaController_loadPArancelariaFromText("posicion.csv",listapArancelarias) == 0 && articuloController_loadArticulosFromText("articulo.csv",listaArticulos,listapArancelarias) == 0 &&
+			tAereoController_loadTAereoFromText("Transporte_Aereo.csv",listaTAereo) == 0 && tMaritimoController_loadTMaritimoFromText("Transporte_Maritimo.csv",listaTMaritimo) == 0	)
+	{
+		printf("Archivos cargados exitosamente\n\n");
+	}
+	else
+	{
+		printf("Hubo un problema al cargar los archivos. Por favor, verifique los mismos\n\n");
+	}
 
 	do{
 	    	aux_getNumeroInt(&option,"1. Articulos\n"

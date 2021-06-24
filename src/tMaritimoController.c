@@ -26,7 +26,7 @@ int tMaritimoController_loadTMaritimoFromText(char* path , LinkedList* pArrayLis
 	if(pArchivo != NULL && pArrayListtMaritimo != NULL)
 	{
 		retorno = parser_tMaritimoFromText(pArchivo,pArrayListtMaritimo);
-		printf("Archivo cargado correctamente\n");
+		//printf("Archivo cargado correctamente\n");
 	}
 	fclose(pArchivo);
 	return retorno;

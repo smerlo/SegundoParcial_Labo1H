@@ -28,7 +28,7 @@ int pArancelariaController_loadPArancelariaFromText(char* path , LinkedList* pAr
 	if(pArchivo != NULL && pArrayListpArancelaria != NULL)
 	{
 		retorno = parser_pArancelariaFromText(pArchivo,pArrayListpArancelaria);
-		printf("Archivo cargado correctamente\n");
+		//printf("Archivo cargado correctamente\n");
 	}
 	fclose(pArchivo);
 	return retorno;
@@ -117,7 +117,7 @@ int pArancelariaController_addPArancelaria(LinkedList* pArrayListpArancelaria)
 				ll_add(pArrayListpArancelaria,pAuxiliarpArancelaria);
 
 				retorno = 1;
-				printf("Articulo creado correctamente con ID %d\n\n", id);
+				printf("Posicion Arancelaria creada correctamente con ID %d\n\n", id);
 				pArancelariaController_saveAsText("posicion.csv" ,pArrayListpArancelaria);
 			}
 		}
@@ -308,7 +308,7 @@ int pArancelariaController_removePArancelaria(LinkedList* pArrayListpArancelaria
 	if(pArrayListpArancelaria != NULL)
 	{
 		pArancelariaController_ListarPosiciones(pArrayListpArancelaria);
-		if(aux_getNumeroInt(&id,"Ingrese el ID del articulo a eliminar\n","Id incorrecto, reingrese.\n",0,ll_len(pArrayListpArancelaria), 2)== 0)
+		if(aux_getNumeroInt(&id,"Ingrese el ID de la posicion arancelaria a eliminar\n","Id incorrecto, reingrese.\n",0,ll_len(pArrayListpArancelaria), 2)== 0)
 		{
 			indicepArancelaria = pArancelariaController_buscarPorId(pArrayListpArancelaria, id);
 			auxpArancelaria = ll_get(pArrayListpArancelaria,indicepArancelaria);

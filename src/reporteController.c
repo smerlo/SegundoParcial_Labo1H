@@ -182,13 +182,11 @@ static int reporteController_ListarReportes(LinkedList* pArrayListReporte)
 static int reporteController_ListarReportesPArancelaria(LinkedList* pArrayListReporte, LinkedList* pArrayListPArancelarias)
 {
 	Reporte* auxReporteUno;
-	Reporte* auxReporteDos;
 	Reporte* auxReporteMayor;
 	pArancelaria* auxParancelaria;
 	int retorno = 0;
 	int flagFirst = 0;
 	int flagCambio = 0;
-	ll_sort(pArrayListReporte,reporte_CompararNArancelaria,0);
 	if(pArrayListReporte != NULL)
 	{
 		printf("%20s%20s%20s\n","NOMBRE","N. ARANCELARIA", "C. AEREO");
@@ -200,19 +198,17 @@ static int reporteController_ListarReportesPArancelaria(LinkedList* pArrayListRe
 			for(int j=0;j < ll_len(pArrayListReporte);j++)
 			{
 				auxReporteUno = (Reporte*)ll_get(pArrayListReporte,j);
-				auxReporteDos = (Reporte*)ll_get(pArrayListReporte,j+1);
-				if(auxReporteUno != NULL && auxReporteDos != NULL && strcmp(auxReporteUno->pArancelaria,auxParancelaria->nomenclatura_arancelaria) == 0 &&
-						strcmp(auxReporteUno->pArancelaria,auxReporteDos->pArancelaria) == 0)
+				if(auxReporteUno != NULL && strcmp(auxReporteUno->pArancelaria,auxParancelaria->nomenclatura_arancelaria) == 0 )
 				{
 					if(flagFirst == 0)
 					{
 						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j);
 						flagFirst = 1;
 						flagCambio = 1;
-					}
-					if(auxReporteMayor->valorAereo < auxReporteDos->valorAereo)
+					}else
+					if(auxReporteMayor->valorAereo < auxReporteUno->valorAereo)
 					{
-						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j+1);
+						auxReporteMayor = (Reporte*)ll_get(pArrayListReporte,j);
 						flagCambio = 1;
 					}
 				}
